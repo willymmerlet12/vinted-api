@@ -53,52 +53,60 @@ router.post("/offer/publish", isAuthenticated, async (req, res) => {
     await newOffer.save();
     res.json(newOffer);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ message: error.message });
   }
 });
 
 router.get("/offers", async (req, res) => {
   try {
-    const { title, priceMin, priceMax, page, sort } = req.query;
+    // création d'un objet dans lequel on va sotcker nos différents filtres
     let filters = {};
-    let limit = Number(req.query.limit);
-    const skip = (page - 1) * limit;
-    if (title) {
-      filters.product_name = new RegExp(title, "i");
+    if (req.query.title) {
+      filters.product_name = new RegExp(req.query.title, "i");
     }
-    if (priceMin) {
+    if (req.query.priceMin) {
       filters.product_price = {
-        $gte: priceMin,
+        $gte: req.query.priceMin,
       };
     }
-    if (priceMax) {
+    if (req.query.priceMax) {
       if (filters.product_price) {
-        filters.product_price.$lte = priceMax;
+        filters.product_price.$lte = req.query.priceMax;
       } else {
         filters.product_price = {
-          $lte: priceMax,
+          $lte: req.query.priceMax,
         };
       }
     }
-    let sort1 = {};
-    if (sort === "price-desc") {
-      sort1 = { product_price: -1 };
-    } else if (sort === "price-asc") {
-      sort1 = { product_price: 1 };
+    let sort = {};
+    if (req.query.sort === "price-desc") {
+      sort = { product_price: -1 };
+    } else if (req.query.sort === "price-asc") {
+      sort = { product_price: 1 };
     }
-    let page1;
-    if (Number(page) < 1) {
-      page1 = 1;
+    let page;
+    if (Number(req.query.page) < 1) {
+      page = 1;
     } else {
-      page1 = Number(page);
+      page = Number(req.query.page);
     }
+    let limit = Number(req.query.limit);
     const offers = await Offer.find(filters)
-      .select("product_name product_price")
-      .sort(sort1)
-      .limit(limit)
-      .skip(skip);
-    res.status(200).json({ count: count, offers: offers });
+      .populate({
+        path: "owner",
+        select: "account",
+      })
+      .sort(sort)
+      .skip((page - 1) * limit) // ignorer les x résultats
+      .limit(limit); // renvoyer y résultats
+    // cette ligne va nous retourner le nombre d'annonces trouvées en fonction des filtres
+    const count = await Offer.countDocuments(filters);
+    res.json({
+      count: count,
+      offers: offers,
+    });
   } catch (error) {
+    console.log(error.message);
     res.status(400).json({ message: error.message });
   }
 });
