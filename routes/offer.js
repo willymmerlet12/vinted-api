@@ -97,9 +97,9 @@ router.get("/offers", async (req, res) => {
       .sort(sort1)
       .limit(limit)
       .skip(skip);
-    res.status(200).json(offers);
+    res.status(200).json({ count: count, offers: offers });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ message: error.message });
   }
 });
 router.get("/offer/:id", async (req, res) => {
@@ -108,7 +108,7 @@ router.get("/offer/:id", async (req, res) => {
       path: "owner",
       select: "account _id",
     });
-    res.status(200).json({ count: count, offers: offer });
+    res.status(200).json(offer);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
