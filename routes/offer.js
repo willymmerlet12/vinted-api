@@ -6,6 +6,7 @@ const isAuthenticated = require("../middlewares/isAuthenticated");
 
 const User = require("../models/User");
 const Offer = require("../models/Offer");
+const { count } = require("../models/User");
 
 router.post("/offer/publish", isAuthenticated, async (req, res) => {
   try {
@@ -107,9 +108,9 @@ router.get("/offer/:id", async (req, res) => {
       path: "owner",
       select: "account _id",
     });
-    res.status(200).json(offer);
+    res.status(200).json({ count: count, offers: offer });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ message: error.message });
   }
 });
 module.exports = router;
