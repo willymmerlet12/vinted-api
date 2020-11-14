@@ -3,6 +3,7 @@ const router = express.Router();
 const uid2 = require("uid2");
 const SHA256 = require("crypto-js/sha256");
 const encBase64 = require("crypto-js/enc-base64");
+const cloudinary = require("cloudinary").v2;
 
 // Import model
 const User = require("../models/User");
@@ -20,8 +21,13 @@ router.post("/user/signup", async (req, res) => {
         message: "This email already has an account",
       });
     } else {
-      // Sinon, on passe à la suite
-
+      const resultAva = await cloudinary.uploader.upload(
+        req.files.picture.path,
+        {
+          folder: `/vinted/User/${user._id}`,
+        }
+      );
+      console.log(resultAva);
       // est-ce que je reçois les infos nécessaires ?
       if (email && username && password) {
         // on peut créer le user
@@ -36,11 +42,16 @@ router.post("/user/signup", async (req, res) => {
           account: {
             username: username,
             phone: phone,
+            avatar: resultAva.secure_url,
           },
+
           token: token,
           hash: hash,
           salt: salt,
         });
+
+        // console.log(result);
+
         // Etpae 3 : sauvegarder le nouveau user
         await newUser.save();
         // Etape 4 : répondre au client
