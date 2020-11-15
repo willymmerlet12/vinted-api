@@ -45,7 +45,7 @@ router.post("/user/signup", async (req, res) => {
         const resultAva = await cloudinary.uploader.upload(
           req.files.picture.path,
           {
-            folder: `/vinted/User${newUser.id}`,
+            folder: `/vinted/User${newUser._id}`,
           }
         );
         newUser.account.avatar = resultAva;
