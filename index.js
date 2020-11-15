@@ -26,7 +26,7 @@ const offerRoutes = require("./routes/offer");
 app.use(offerRoutes);
 
 app.all("*", (req, res) => {
-  res.status(404).json({ error: error.message });
+  res.status(404).json({ message: error.message });
 });
 
 app.listen(process.env.PORT, () => {
