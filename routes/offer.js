@@ -24,6 +24,7 @@ router.post("/offer/publish", isAuthenticated, async (req, res) => {
       color,
     } = req.fields;
 
+    // Créer une nouvelle annonce (sans image)
     const newOffer = new Offer({
       product_name: title,
       product_description: description,
@@ -38,18 +39,21 @@ router.post("/offer/publish", isAuthenticated, async (req, res) => {
       owner: req.user,
     });
 
+    // console.log(newOffer);
+
+    // Envoi de l'image à cloudinary
     const result = await cloudinary.uploader.upload(req.files.picture.path, {
       folder: `/vinted/offers/${newOffer._id}`,
     });
     // console.log(result);
-
-    newOffer.product_image = result.secure_url;
+    // Ajoute result à product_image
+    newOffer.product_image = result;
 
     // Sauvegarder l'annonce
     await newOffer.save();
     res.json(newOffer);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(400).json({ error: error.message });
   }
 });
 
