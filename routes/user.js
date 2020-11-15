@@ -7,7 +7,6 @@ const cloudinary = require("cloudinary").v2;
 
 // Import model
 const User = require("../models/User");
-const { enc } = require("crypto-js");
 
 router.post("/user/signup", async (req, res) => {
   try {
@@ -21,13 +20,8 @@ router.post("/user/signup", async (req, res) => {
         message: "This email already has an account",
       });
     } else {
-      const resultAva = await cloudinary.uploader.upload(
-        req.files.picture.path,
-        {
-          folder: `/vinted/User/${user._id}`,
-        }
-      );
-      console.log(resultAva);
+      // Sinon, on passe à la suite
+
       // est-ce que je reçois les infos nécessaires ?
       if (email && username && password) {
         // on peut créer le user
@@ -42,21 +36,23 @@ router.post("/user/signup", async (req, res) => {
           account: {
             username: username,
             phone: phone,
-            avatar: resultAva.secure_url,
           },
 
           token: token,
           hash: hash,
           salt: salt,
         });
-
-        // console.log(result);
-
+        const resultAva = await cloudinary.uploader.upload(
+          req.files.picture.path,
+          {
+            folder: `/vinted/User`,
+          }
+        );
+        newUser.account.avatar = resultAva;
         // Etpae 3 : sauvegarder le nouveau user
         await newUser.save();
         // Etape 4 : répondre au client
         res.status(200).json({
-          _id: newUser._id,
           email: newUser.email,
           account: newUser.account,
           token: newUser.token,
@@ -68,7 +64,7 @@ router.post("/user/signup", async (req, res) => {
       }
     }
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ message: error.message });
   }
 });
 
