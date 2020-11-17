@@ -24,6 +24,8 @@ const userRoutes = require("./routes/user");
 app.use(userRoutes);
 const offerRoutes = require("./routes/offer");
 app.use(offerRoutes);
+const PaymentRoute = require("./routes/payment");
+app.use(PaymentRoute);
 
 app.all("*", (req, res) => {
   res.status(404).json({ message: error.message });
