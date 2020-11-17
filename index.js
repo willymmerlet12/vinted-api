@@ -3,6 +3,9 @@ const express = require("express");
 const formidable = require("express-formidable");
 const mongoose = require("mongoose");
 const cloudinary = require("cloudinary").v2;
+const stripe = require("stripe")(
+  "sk_test_51HoU8OHjBeHezzTyjHdEfO7czN2PxdjZu30G5vz9PsxWTv8qbNrVHDLQDb6moYN5MAp7Xho5Q1dFDRoBgtNuid3d00wlBoYVXc"
+);
 const cors = require("cors");
 const app = express();
 app.use(formidable());
@@ -24,8 +27,24 @@ const userRoutes = require("./routes/user");
 app.use(userRoutes);
 const offerRoutes = require("./routes/offer");
 app.use(offerRoutes);
-const PaymentRoute = require("./routes/payment");
-app.use(PaymentRoute);
+
+app.post("/payment", async (req, res) => {
+  try {
+    const stripeToken = req.fields.stripeToken;
+
+    const response = await stripe.charges.create({
+      amount: 2004,
+      currency: "eur",
+      description: "sjshhjs",
+      source: stripeToken,
+    });
+    console.log(response);
+
+    res.json(response);
+  } catch (error) {
+    console.log(error.message);
+  }
+});
 
 app.all("*", (req, res) => {
   res.status(404).json({ message: error.message });
