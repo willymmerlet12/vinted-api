@@ -49,7 +49,7 @@ router.post("/user/signup", async (req, res) => {
               folder: `/vinted/User/${newUser._id}`,
             }
           );
-          newUser.account.avatar = resultAva.secure_url;
+          newUser.account.avatar = resultAva;
         }
         // Etpae 3 : sauvegarder le nouveau user
         await newUser.save();
