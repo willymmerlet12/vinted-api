@@ -3,9 +3,7 @@ const express = require("express");
 const formidable = require("express-formidable");
 const mongoose = require("mongoose");
 const cloudinary = require("cloudinary").v2;
-const stripe = require("stripe")(
-  "sk_test_51HoU8OHjBeHezzTyjHdEfO7czN2PxdjZu30G5vz9PsxWTv8qbNrVHDLQDb6moYN5MAp7Xho5Q1dFDRoBgtNuid3d00wlBoYVXc"
-);
+const stripe = require("stripe")(process.env.STRIPE_API_KEY);
 const cors = require("cors");
 const app = express();
 app.use(formidable());
@@ -33,9 +31,9 @@ app.post("/payment", async (req, res) => {
     const stripeToken = req.fields.stripeToken;
 
     const response = await stripe.charges.create({
-      amount: 2004,
+      amount: req.fields.amount * 100,
       currency: "eur",
-      description: "sjshhjs",
+      description: req.fields.title,
       source: stripeToken,
     });
     console.log(response);
