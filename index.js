@@ -3,7 +3,7 @@ const express = require("express");
 const formidable = require("express-formidable");
 const mongoose = require("mongoose");
 const cloudinary = require("cloudinary").v2;
-const stripe = require("stripe")(STRIPE_API_KEY);
+const stripe = require("stripe")(process.env.STRIPE_API_KEY);
 const cors = require("cors");
 const app = express();
 app.use(formidable());
