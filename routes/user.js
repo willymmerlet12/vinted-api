@@ -42,13 +42,15 @@ router.post("/user/signup", async (req, res) => {
           hash: hash,
           salt: salt,
         });
-        const resultAva = await cloudinary.uploader.upload(
-          req.files.picture.path,
-          {
-            folder: `/vinted/User/${newUser._id}`,
-          }
-        );
-        newUser.account.avatar = resultAva;
+        if (req.files.picture) {
+          const resultAva = await cloudinary.uploader.upload(
+            req.files.picture.path,
+            {
+              folder: `/vinted/User/${newUser._id}`,
+            }
+          );
+          newUser.account.avatar = resultAva;
+        }
         // Etpae 3 : sauvegarder le nouveau user
         await newUser.save();
         // Etape 4 : répondre au client
