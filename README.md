@@ -13,3 +13,17 @@ Backend side of my vinted replica website.
 7. payment route functional using stripe.
 8. Delete an offer with signin.
 9. Update an existing offer.
+
+## Installation
+
+To install all dependencies :
+
+```js
+npm;
+```
+
+To launch :
+
+```js
+npx nodemon index.js
+```
